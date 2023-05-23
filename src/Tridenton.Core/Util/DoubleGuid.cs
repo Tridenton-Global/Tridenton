@@ -1,5 +1,6 @@
 ﻿namespace Tridenton.Core.Util;
 
+[JsonConverter(typeof(DoubleGuidJsonConverter))]
 public struct DoubleGuid : IEquatable<DoubleGuid>, IParsable<DoubleGuid>
 {
     private static int _guidLength => Guid.Empty.ToString().Length;
