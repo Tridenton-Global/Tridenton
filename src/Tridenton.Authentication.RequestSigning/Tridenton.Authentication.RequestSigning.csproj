@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tridenton.Core\Tridenton.Core.csproj" />
+    <ProjectReference Include="..\Tridenton.Extensions.Http\Tridenton.Extensions.Http.csproj" />
   </ItemGroup>
 </Project>
