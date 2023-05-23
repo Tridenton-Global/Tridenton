@@ -9,4 +9,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Tridenton.Core\Tridenton.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Exceptions\" />
+    <None Remove="Models\" />
+    <None Remove="Contexts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+    <Folder Include="Models\" />
+    <Folder Include="Contexts\" />
+  </ItemGroup>
 </Project>
