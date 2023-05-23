@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Attributes\" />
+    <None Remove="Models\" />
+    <None Remove="Util\" />
+    <None Remove="Exceptions\" />
+    <None Remove="Extensions\" />
+    <None Remove="Util\Converters\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Attributes\" />
+    <Folder Include="Models\" />
+    <Folder Include="Util\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Util\Converters\" />
+  </ItemGroup>
+</Project>
