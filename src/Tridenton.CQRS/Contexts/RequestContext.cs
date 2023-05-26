@@ -1,11 +1,7 @@
 ﻿namespace Tridenton.CQRS;
 
-public interface IRequestContext<TRequest> where TRequest : TridentonRequest
+public interface IRequestContext<TRequest> : IContextBase where TRequest : TridentonRequest
 {
-    DoubleGuid RequestID => DoubleGuid.NewGuid();
-
-    DateTime RequestTS => DateTime.UtcNow;
-
     TRequest Request { get; }
 }
 
