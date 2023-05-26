@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Tridenton.CQRSPersistenceInteraction;
 
 namespace Tridenton.Extensions.Persistence;
 
@@ -30,5 +31,19 @@ public static class DataContextExtensions
         MultiContextsOptionsResolver.Instance.SetOptionsPerContext<TDataContext>(settings);
 
         return services;
+    }
+
+    public static BaseCQRSOptionsBuilder WithDataContext<TDataContext>(this BaseCQRSOptionsBuilder options) where TDataContext : DataContext
+    {
+        options.DataContextType = typeof(TDataContext);
+
+        return options;
+    }
+
+    public static BaseCQRSOptionsBuilder UsingEntity<TRequestLog>(this BaseCQRSOptionsBuilder options) where TRequestLog : RequestLog
+    {
+        options.RequestLogEntityType = typeof(TRequestLog);
+
+        return options;
     }
 }

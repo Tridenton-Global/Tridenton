@@ -1,4 +1,6 @@
-﻿namespace Tridenton.CQRS;
+﻿using Tridenton.CQRSPersistenceInteraction;
+
+namespace Tridenton.CQRS;
 
 public sealed class CQRSOptionsBuilder
 {
@@ -38,7 +40,7 @@ public sealed class CQRSOptionsBuilder
     }
 }
 
-public sealed class CQRSLogsOptionsBuilder : ResponseOptionsBuilder
+public sealed class CQRSLogsOptionsBuilder : BaseCQRSOptionsBuilder
 {
     private const string DefaultServerErrorMessage = "The request processing has failed because of an unknown error, exception or failure.";
 
@@ -46,12 +48,9 @@ public sealed class CQRSLogsOptionsBuilder : ResponseOptionsBuilder
 
     internal string ServerErrorMessage { get; private set; }
 
-    internal CQRSMetricsDataContextOptionsBuilder DataContextOptions { get; private set; }
-
     internal CQRSLogsOptionsBuilder()
     {
         ServerErrorMessage = DefaultServerErrorMessage;
-        DataContextOptions = new();
     }
 
     public CQRSLogsOptionsBuilder WithHiddenResponseMetadata()
@@ -66,46 +65,4 @@ public sealed class CQRSLogsOptionsBuilder : ResponseOptionsBuilder
         ServerErrorMessage = message;
         return this;
     }
-
-    //public CQRSLogsOptionsBuilder WithDataContext<TDataContext>()
-    //    where TDataContext : DataContext
-    //{
-    //    DataContextOptions.DataContextType = typeof(TDataContext);
-
-    //    return this;
-    //}
-
-    //public CQRSLogsOptionsBuilder UsingEntity<TRequestLog>()
-    //    where TRequestLog : RequestLog
-    //{
-    //    DataContextOptions.RequestLogEntityType = typeof(TRequestLog);
-
-    //    return this;
-    //}
-}
-
-internal sealed class CQRSMetricsDataContextOptionsBuilder
-{
-    private Type? _dataContextType;
-    internal Type? DataContextType
-    {
-        get => _dataContextType;
-        set
-        {
-            if (_dataContextType is null)
-            {
-                _dataContextType = value;
-            }
-        }
-    }
-
-    //private Type _requestLogEntityType = typeof(RequestLog);
-    //internal Type RequestLogEntityType
-    //{
-    //    get => _requestLogEntityType;
-    //    set
-    //    {
-    //        _requestLogEntityType = value;
-    //    }
-    //}
 }

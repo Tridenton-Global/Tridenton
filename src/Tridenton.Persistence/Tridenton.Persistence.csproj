@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tridenton.Core\Tridenton.Core.csproj" />
+    <ProjectReference Include="..\Tridenton.CQRSPersistenceInteraction\Tridenton.CQRSPersistenceInteraction.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Models\" />

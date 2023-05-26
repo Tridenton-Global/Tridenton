@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tridenton.Authentication.Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tridenton.Extensions.Http", "src\Tridenton.Extensions.Http\Tridenton.Extensions.Http.csproj", "{5FD5D7FA-4525-4A2E-A49E-31C3A12748A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tridenton.CQRSPersistenceInteraction", "src\Tridenton.CQRSPersistenceInteraction\Tridenton.CQRSPersistenceInteraction.csproj", "{F6EEF37E-A180-4B7C-83C3-3F5957A48979}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{5FD5D7FA-4525-4A2E-A49E-31C3A12748A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FD5D7FA-4525-4A2E-A49E-31C3A12748A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD5D7FA-4525-4A2E-A49E-31C3A12748A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6EEF37E-A180-4B7C-83C3-3F5957A48979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6EEF37E-A180-4B7C-83C3-3F5957A48979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6EEF37E-A180-4B7C-83C3-3F5957A48979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6EEF37E-A180-4B7C-83C3-3F5957A48979}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,5 +74,6 @@ Global
 		{9E123E16-9B6D-4A1A-B8B7-E3667AFE1106} = {A1990F6E-5702-4DCA-85F8-C604CF9D595C}
 		{7A4796F1-98F5-49DA-9710-D160F312F0D4} = {A1990F6E-5702-4DCA-85F8-C604CF9D595C}
 		{5FD5D7FA-4525-4A2E-A49E-31C3A12748A3} = {A1990F6E-5702-4DCA-85F8-C604CF9D595C}
+		{F6EEF37E-A180-4B7C-83C3-3F5957A48979} = {A1990F6E-5702-4DCA-85F8-C604CF9D595C}
 	EndGlobalSection
 EndGlobal
