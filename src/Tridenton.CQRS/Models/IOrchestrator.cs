@@ -15,18 +15,20 @@ public interface IOrchestrator
         where TNotification : TridentonRequest;
 }
 
-internal sealed class Orchestrator : IOrchestrator
+internal sealed class Orchestrator : AbstractService, IOrchestrator
 {
-    private readonly ConcurrentDictionary<Type, Type> _requestsHandlers;
-
-    public Orchestrator()
-    {
-        _requestsHandlers = new();
-    }
+    public Orchestrator(IServiceProvider services) : base(services) { }
 
     public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : TridentonRequest
     {
-        throw new NotImplementedException();
+        var handlers = ServicesRegistrar.Instance.GetNotificationHandlers(notification.GetType());
+
+        for (long i = 0; i < handlers.LongLength; i++)
+        {
+
+        }
+
+        return ValueTask.CompletedTask;
     }
 
     public ValueTask SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : TridentonRequest

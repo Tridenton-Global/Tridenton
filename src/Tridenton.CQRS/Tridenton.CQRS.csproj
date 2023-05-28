@@ -15,11 +15,13 @@
     <None Remove="Models\" />
     <None Remove="Contexts\" />
     <None Remove="Extensions\" />
+    <None Remove="Attributes\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />
     <Folder Include="Models\" />
     <Folder Include="Contexts\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Attributes\" />
   </ItemGroup>
 </Project>
