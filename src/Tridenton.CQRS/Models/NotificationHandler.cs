@@ -4,5 +4,5 @@ public abstract class NotificationHandler<TNotification> : BaseHandler where TNo
 {
     protected NotificationHandler(IServiceProvider services) : base(services) { }
 
-    public abstract ValueTask HandleAsync(INotificationContext<TNotification> context);
+    public abstract Task HandleAsync(INotificationContext<TNotification> context);
 }

@@ -2,7 +2,7 @@
 
 namespace Tridenton.CQRS;
 
-internal class ServicesRegistrar
+internal sealed class ServicesRegistrar
 {
     private static readonly Lazy<ServicesRegistrar> _instance = new(() => new ServicesRegistrar());
 
@@ -10,19 +10,18 @@ internal class ServicesRegistrar
 
     private readonly ConcurrentDictionary<Type, Type> _requestsHandlers;
     private readonly List<KeyValuePair<Type, Type>> _notificationsHandlers;
+    private readonly List<Type> _middlewares;
 
     private ServicesRegistrar()
     {
         _requestsHandlers = new();
         _notificationsHandlers = new();
+        _middlewares = new();
     }
 
-    internal void TryAddRequestHandler(Type requestType, Type handlerType)
+    internal void AddRequestHandler(Type requestType, Type handlerType)
     {
-        if (!_requestsHandlers.TryAdd(requestType, handlerType))
-        {
-            throw new InvalidOperationException($"Unable to set up CQRS request handlers. Request handler '{requestType.Name}' has more than one handler");
-        }
+        _requestsHandlers.TryAdd(requestType, handlerType);
     }
 
     internal void AddNotificationHandlers(Type notificationType, Type[] handlerTypes)

@@ -4,7 +4,7 @@ public abstract class RequestHandler<TRequest> : BaseHandler where TRequest : Tr
 {
     protected RequestHandler(IServiceProvider services) : base(services) { }
 
-    protected abstract ValueTask HandleAsync(IRequestContext<TRequest> context);
+    public abstract ValueTask HandleAsync(IRequestContext<TRequest> context);
 }
 
 public abstract class RequestHandler<TRequest, TResponse> : BaseHandler
@@ -13,5 +13,5 @@ public abstract class RequestHandler<TRequest, TResponse> : BaseHandler
 {
     protected RequestHandler(IServiceProvider services) : base(services) { }
 
-    protected abstract ValueTask<TResponse> HandleAsync(IRequestContext<TRequest, TResponse> context);
+    public abstract ValueTask<TResponse> HandleAsync(IRequestContext<TRequest, TResponse> context);
 }
