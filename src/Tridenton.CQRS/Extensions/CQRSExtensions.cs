@@ -18,38 +18,52 @@ public static class CQRSExtensions
             .Where(t => !t.IsAbstract);
 
         var requestsTypes = definedTypes
-            .Where(t => t == typeof(TridentonRequest) || t == typeof(TridentonRequest<>))
+            .Where(t => t.BaseType == typeof(TridentonRequest) || HasGenericParent(t, typeof(TridentonRequest<>)))
+            .ToArray();
+
+        var requestsHandlersTypes = definedTypes
+            .Where(t => HasGenericParent(t, typeof(RequestHandler<>)) || HasGenericParent(t, typeof(RequestHandler<,>)))
             .ToArray();
 
         for (long i = 0; i < requestsTypes.LongLength; i++)
         {
             var requestType = requestsTypes[i];
 
-            var requestHandlersTypes = definedTypes
-                .Where(t => t == typeof(RequestHandler<>) && t.GetGenericArguments()[0] == requestType);
+            var requestHandlerTypes = requestsHandlersTypes
+                .Where(t => t.BaseType!.GenericTypeArguments[0] == requestType);
 
-            if (requestType.IsGenericType)
+            if (requestType.BaseType!.IsGenericType)
             {
-                var responseType = requestType.GetGenericArguments()[1];
+                var responseType = requestType.BaseType!.GenericTypeArguments[0];
 
-                requestHandlersTypes = requestHandlersTypes
-                    .Where(t => t.GetGenericArguments()[1] == responseType);
+                requestHandlerTypes = requestHandlerTypes
+                    .Where(t => t.BaseType!.GenericTypeArguments[1] == responseType);
             }
 
-            var requestHandlersTypesArray = requestHandlersTypes.ToArray();
+            var requestHandlersTypesArray = requestHandlerTypes.ToArray();
 
-            if (requestHandlersTypesArray.LongLength > 1)
+            if (requestHandlersTypesArray.Any())
             {
-                throw new MoreThanOneRequestHandlerException(requestHandlersTypesArray[0]);
-            }
+                if (requestHandlersTypesArray.LongLength > 1)
+                {
+                    throw new MoreThanOneRequestHandlerException(requestType);
+                }
 
-            ServicesRegistrar.Instance.AddRequestHandler(requestType, requestHandlersTypesArray[0]);
+                ServicesRegistrar.Instance.AddRequestHandler(requestType, requestHandlersTypesArray[0]);
+
+                services.AddTransient(requestHandlersTypesArray[0]);
+            }
 
             var notificationHandlers = definedTypes
-                .Where(t => t == typeof(NotificationHandler<>) && t.GetGenericArguments()[0] == requestType)
+                .Where(t => HasGenericParent(t, typeof(NotificationHandler<>)) && t.BaseType!.GenericTypeArguments[0] == requestType)
                 .ToArray();
 
             ServicesRegistrar.Instance.AddNotificationHandlers(requestType, notificationHandlers);
+
+            for (long j = 0; j < notificationHandlers.LongLength; j++)
+            {
+                services.AddTransient(notificationHandlers[j]);
+            }
         }
 
         if (settings.SavesLogs)
@@ -58,5 +72,10 @@ public static class CQRSExtensions
         }
 
         return services;
+    }
+
+    private static bool HasGenericParent(TypeInfo type, Type genericType)
+    {
+        return type.BaseType is not null && type.BaseType.IsGenericType && type.BaseType.GetGenericTypeDefinition() == genericType;
     }
 }

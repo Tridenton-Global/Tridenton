@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Tridenton.Core.Models;
 using Tridenton.Core.Util;
 
-namespace Tridenton.CQRSPersistenceInteraction;
+namespace Tridenton.Core.Models;
 
 public class RequestLog
 {

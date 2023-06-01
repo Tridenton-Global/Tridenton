@@ -23,12 +23,16 @@ internal sealed class Orchestrator : AbstractService, IOrchestrator
     {
         var handlersTypes = ServicesRegistrar.Instance.GetNotificationHandlers(notification.GetType());
 
+        var tasks = new List<Task>();
+
         for (long i = 0; i < handlersTypes.LongLength; i++)
         {
             var handler = GetService<NotificationHandler<TNotification>>(handlersTypes[i]);
 
-            handler.HandleAsync(new NotificationContext<TNotification>(notification, cancellationToken)).ConfigureAwait(false);
+            tasks.Add(handler.HandleAsync(new NotificationContext<TNotification>(notification, cancellationToken)));
         }
+
+        Task.WhenAll(tasks).ConfigureAwait(false);
 
         return ValueTask.CompletedTask;
     }
