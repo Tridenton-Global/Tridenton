@@ -12,7 +12,7 @@ public abstract class AbstractService
     }
 
     /// <summary>
-    /// Retrieves <typeparamref name="TService"/> from DI container if it is present; otherwise, throws <see cref="InvalidOperationException"/>
+    ///     Retrieves <typeparamref name="TService"/> from the <see cref="IServiceProvider"/> if it is present; otherwise, throws <see cref="InvalidOperationException"/>
     /// </summary>
     /// <typeparam name="TService">Service type</typeparam>
     /// <returns><typeparamref name="TService"/></returns>
@@ -25,7 +25,7 @@ public abstract class AbstractService
     }
 
     /// <summary>
-    /// Retrieves <typeparamref name="TService"/> from DI container if it is present; otherwise, throws <see cref="InvalidOperationException"/>
+    ///     Retrieves <typeparamref name="TService"/> from the <see cref="IServiceProvider"/> if it is present; otherwise, throws <see cref="InvalidOperationException"/>
     /// </summary>
     /// <typeparam name="TService">Service type</typeparam>
     /// <returns><typeparamref name="TService"/></returns>
@@ -35,5 +35,25 @@ public abstract class AbstractService
         var service = _services.GetService(serviceType) ?? throw new InvalidOperationException($"Unable to initialize instance of {typeof(TService).Name}");
 
         return (service as TService)!;
+    }
+
+    /// <summary>
+    ///     Get an enumeration of services of type <typeparamref name="TService"/> from the <see cref="IServiceProvider"/>.
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
+    /// <returns>An array of services of type <typeparamref name="TService"/>.</returns>
+    protected TService[] GetServices<TService>() where TService : class
+    {
+        return _services.GetServices<TService>().ToArray();
+    }
+
+    /// <summary>
+    ///     Get an enumeration of services of type <typeparamref name="TService"/> from the <see cref="IServiceProvider"/>.
+    /// </summary>
+    /// <typeparam name="TService"></typeparam>
+    /// <returns>An array of services of type <typeparamref name="TService"/>.</returns>
+    protected TService[] GetServices<TService>(Type serviceType) where TService : class
+    {
+        return _services.GetServices(serviceType).Select(s => (s as TService)!).ToArray();
     }
 }

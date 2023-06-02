@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Tridenton.CQRS;
 
-namespace Tridenton.CQRS;
+namespace Tridenton.Extensions.CQRS;
 
 public static class CQRSExtensions
 {
@@ -63,6 +64,21 @@ public static class CQRSExtensions
             for (long j = 0; j < notificationHandlers.LongLength; j++)
             {
                 services.AddTransient(notificationHandlers[j]);
+            }
+        }
+
+        for (int i = 0; i < settings.Middlewares.Count; i++)
+        {
+            var middleware = settings.Middlewares.ElementAt(i);
+
+            if (HasGenericParent((TypeInfo)middleware, typeof(CQRSMiddleware<>)))
+            {
+                services.AddTransient(typeof(CQRSMiddleware<>), middleware);
+            }
+
+            if (HasGenericParent((TypeInfo)middleware, typeof(CQRSMiddleware<,>)))
+            {
+                services.AddTransient(typeof(CQRSMiddleware<,>), middleware);
             }
         }
 

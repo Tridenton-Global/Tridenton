@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Tridenton.CQRS;
 
@@ -11,7 +12,7 @@ public interface IOrchestrator
         where TRequest : TridentonRequest<TResponse>
         where TResponse : class;
 
-    ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
+    ValueTask PublishAsync<TNotification>(TNotification notification, PublicationBehavior behavior = PublicationBehavior.Parallel, CancellationToken cancellationToken = default)
         where TNotification : TridentonRequest;
 }
 
@@ -19,7 +20,7 @@ internal sealed class Orchestrator : AbstractService, IOrchestrator
 {
     public Orchestrator(IServiceProvider services) : base(services) { }
 
-    public ValueTask PublishAsync<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : TridentonRequest
+    public async ValueTask PublishAsync<TNotification>(TNotification notification, PublicationBehavior behavior = PublicationBehavior.Parallel, CancellationToken cancellationToken = default) where TNotification : TridentonRequest
     {
         var handlersTypes = ServicesRegistrar.Instance.GetNotificationHandlers(notification.GetType());
 
@@ -29,24 +30,46 @@ internal sealed class Orchestrator : AbstractService, IOrchestrator
         {
             var handler = GetService<NotificationHandler<TNotification>>(handlersTypes[i]);
 
-            tasks.Add(handler.HandleAsync(new NotificationContext<TNotification>(notification, cancellationToken)));
+            var task = handler.HandleAsync(new NotificationContext<TNotification>(notification, cancellationToken));
+
+            switch (behavior)
+            {
+                case PublicationBehavior.Parallel:
+                    tasks.Add(task);
+                    break;
+
+                case PublicationBehavior.InOrder:
+                    await task.ConfigureAwait(false);
+                    break;
+
+                default:
+                    break;
+            }
         }
 
-        Task.WhenAll(tasks).ConfigureAwait(false);
-
-        return ValueTask.CompletedTask;
+        if (tasks.Any())
+        {
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
     }
 
-    public ValueTask SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : TridentonRequest
+    public async ValueTask SendAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : TridentonRequest
     {
         var handlerType = ServicesRegistrar.Instance.GetRequestHandler(request.GetType());
 
         var handler = GetService<RequestHandler<TRequest>>(handlerType);
 
-        return handler.HandleAsync(new RequestContext<TRequest>(request, cancellationToken));
+        RequestHandlerDelegate handlerDelegate = () => handler.HandleAsync(new RequestContext<TRequest>(request, cancellationToken)).AsTask();
+
+        var response = GetServices<CQRSMiddleware<TRequest>>()
+            .Reverse()
+            .Aggregate(handlerDelegate, (next, middleware) => () => middleware.HandleAsync(new MiddlewareContext<TRequest>(request, next, cancellationToken)))
+            .Invoke();
+
+        await response;
     }
 
-    public ValueTask<TResponse> SendAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    public async ValueTask<TResponse> SendAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : TridentonRequest<TResponse>
         where TResponse : class
     {
@@ -54,6 +77,13 @@ internal sealed class Orchestrator : AbstractService, IOrchestrator
 
         var handler = GetService<RequestHandler<TRequest, TResponse>>(handlerType);
 
-        return handler.HandleAsync(new RequestContext<TRequest, TResponse>(request, cancellationToken));
+        RequestHandlerDelegate<TResponse> handlerDelegate = () => handler!.HandleAsync(new RequestContext<TRequest, TResponse>(request, cancellationToken)).AsTask();
+
+        var response = GetServices<CQRSMiddleware<TRequest, TResponse>>()
+            .Reverse()
+            .Aggregate(handlerDelegate, (next, middleware) => () => middleware.HandleAsync(new MiddlewareContext<TRequest, TResponse>(request, next, cancellationToken)))
+            .Invoke();
+
+        return await response;
     }
 }

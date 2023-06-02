@@ -10,13 +10,11 @@ internal sealed class ServicesRegistrar
 
     private readonly ConcurrentDictionary<Type, Type> _requestsHandlers;
     private readonly List<KeyValuePair<Type, Type>> _notificationsHandlers;
-    private readonly List<Type> _middlewares;
 
     private ServicesRegistrar()
     {
         _requestsHandlers = new();
         _notificationsHandlers = new();
-        _middlewares = new();
     }
 
     internal void AddRequestHandler(Type requestType, Type handlerType)

@@ -6,7 +6,7 @@ public sealed class CQRSOptionsBuilder
 {
     internal List<Assembly> Assemblies { get; private set; }
 
-    internal List<Type> Middlewares { get; private set; }
+    internal HashSet<Type> Middlewares { get; private set; }
 
     internal bool SavesLogs { get; private set; }
 
