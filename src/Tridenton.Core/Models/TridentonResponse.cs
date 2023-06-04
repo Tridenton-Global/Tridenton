@@ -149,7 +149,7 @@ public abstract class ResponseOptionsBuilder
 
 [TypeConverter(typeof(EnumerationTypeConverter<ResponseStatus>))]
 [JsonConverter(typeof(EnumerationJsonConverter<ResponseStatus>))]
-public sealed class ResponseStatus : Enumeration
+public sealed record ResponseStatus : Enumeration
 {
     private ResponseStatus(string value) : base(value) { }
 
@@ -160,7 +160,7 @@ public sealed class ResponseStatus : Enumeration
 
 [TypeConverter(typeof(EnumerationTypeConverter<ErrorSide>))]
 [JsonConverter(typeof(EnumerationJsonConverter<ErrorSide>))]
-public sealed class ErrorSide : Enumeration
+public sealed record ErrorSide : Enumeration
 {
     private ErrorSide(string value) : base(value) { }
 

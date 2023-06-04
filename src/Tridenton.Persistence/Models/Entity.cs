@@ -39,7 +39,7 @@ public abstract class Entity<TId> where TId : struct
 
 [TypeConverter(typeof(EnumerationTypeConverter<LifecycleState>))]
 [JsonConverter(typeof(EnumerationJsonConverter<LifecycleState>))]
-public class LifecycleState : Enumeration
+public record LifecycleState : Enumeration
 {
     protected LifecycleState(string value) : base(value) { }
 

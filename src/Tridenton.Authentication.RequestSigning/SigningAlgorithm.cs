@@ -2,7 +2,7 @@
 
 [TypeConverter(typeof(EnumerationTypeConverter<SigningAlgorithm>))]
 [JsonConverter(typeof(EnumerationJsonConverter<SigningAlgorithm>))]
-public class SigningAlgorithm : Enumeration
+public record SigningAlgorithm : Enumeration
 {
     protected SigningAlgorithm(string value) : base(value) { }
 

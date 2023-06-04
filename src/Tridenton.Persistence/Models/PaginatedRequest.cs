@@ -120,7 +120,7 @@ public sealed class FilteringExpression
 
 [TypeConverter(typeof(EnumerationTypeConverter<OrderingDirection>))]
 [JsonConverter(typeof(EnumerationJsonConverter<OrderingDirection>))]
-public class OrderingDirection : Enumeration
+public record OrderingDirection : Enumeration
 {
     protected OrderingDirection(string value) : base(value) { }
 
@@ -130,7 +130,7 @@ public class OrderingDirection : Enumeration
 
 [TypeConverter(typeof(EnumerationTypeConverter<ExpressionOperator>))]
 [JsonConverter(typeof(EnumerationJsonConverter<ExpressionOperator>))]
-public sealed class ExpressionOperator : Enumeration
+public sealed record ExpressionOperator : Enumeration
 {
     internal readonly string Expression;
     internal readonly int ParamsCount;
