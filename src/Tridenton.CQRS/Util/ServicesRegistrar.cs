@@ -8,6 +8,8 @@ internal sealed class ServicesRegistrar
 
     internal static ServicesRegistrar Instance => _instance.Value;
 
+    internal PublicationBehavior PublicationBehavior { get; set; }
+
     private readonly ConcurrentDictionary<Type, Type> _requestsHandlers;
     private readonly List<KeyValuePair<Type, Type>> _notificationsHandlers;
 

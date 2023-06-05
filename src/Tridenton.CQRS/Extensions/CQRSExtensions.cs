@@ -10,6 +10,8 @@ public static class CQRSExtensions
         var settings = new CQRSOptionsBuilder();
         options.Invoke(settings);
 
+        ServicesRegistrar.Instance.PublicationBehavior = settings.PublicationBehavior;
+
         services.AddSingleton<IOrchestrator, Orchestrator>();
 
         var assemblies = settings.Assemblies.Distinct().ToArray();

@@ -3,5 +3,5 @@
 public enum PublicationBehavior
 {
     Parallel = 1,
-    InOrder  = 2,
+    Sequential  = 2,
 }

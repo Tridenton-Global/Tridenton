@@ -12,7 +12,7 @@ public interface IOrchestrator
         where TRequest : TridentonRequest<TResponse>
         where TResponse : class;
 
-    ValueTask PublishAsync<TNotification>(TNotification notification, PublicationBehavior behavior = PublicationBehavior.Parallel, CancellationToken cancellationToken = default)
+    ValueTask PublishAsync<TNotification>(TNotification notification, PublicationBehavior? behavior = null, CancellationToken cancellationToken = default)
         where TNotification : TridentonRequest;
 }
 
@@ -20,8 +20,10 @@ internal sealed class Orchestrator : AbstractService, IOrchestrator
 {
     public Orchestrator(IServiceProvider services) : base(services) { }
 
-    public async ValueTask PublishAsync<TNotification>(TNotification notification, PublicationBehavior behavior = PublicationBehavior.Parallel, CancellationToken cancellationToken = default) where TNotification : TridentonRequest
+    public async ValueTask PublishAsync<TNotification>(TNotification notification, PublicationBehavior? behavior = null, CancellationToken cancellationToken = default) where TNotification : TridentonRequest
     {
+        behavior ??= ServicesRegistrar.Instance.PublicationBehavior;
+
         var handlersTypes = ServicesRegistrar.Instance.GetNotificationHandlers(notification.GetType());
 
         var tasks = new List<Task>();
@@ -38,7 +40,7 @@ internal sealed class Orchestrator : AbstractService, IOrchestrator
                     tasks.Add(task);
                     break;
 
-                case PublicationBehavior.InOrder:
+                case PublicationBehavior.Sequential:
                     await task.ConfigureAwait(false);
                     break;
 

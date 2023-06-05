@@ -1,6 +1,7 @@
 ﻿using Tridenton.CQRSPersistenceInteraction;
+using Tridenton.CQRS;
 
-namespace Tridenton.CQRS;
+namespace Tridenton.Extensions.CQRS;
 
 public sealed class CQRSOptionsBuilder
 {
@@ -12,11 +13,15 @@ public sealed class CQRSOptionsBuilder
 
     internal CQRSLogsOptionsBuilder LogsOptions { get; private set; }
 
+    internal PublicationBehavior PublicationBehavior { get; private set; }
+
     internal CQRSOptionsBuilder()
     {
         Assemblies = new();
         Middlewares = new();
         LogsOptions = new();
+
+        PublicationBehavior = PublicationBehavior.Parallel;
     }
 
     public CQRSOptionsBuilder AddMiddleware(Type middlewareType)
@@ -28,6 +33,12 @@ public sealed class CQRSOptionsBuilder
     public CQRSOptionsBuilder AddAssemblies(params Assembly[] assemblies)
     {
         Assemblies.AddRange(assemblies);
+        return this;
+    }
+
+    public CQRSOptionsBuilder WithSequentialNotifications()
+    {
+        PublicationBehavior = PublicationBehavior.Sequential;
         return this;
     }
 
