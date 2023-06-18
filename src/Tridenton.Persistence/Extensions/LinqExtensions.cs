@@ -107,7 +107,7 @@ public static class LinqExtensions
     /// </returns>
     public static IQueryable<TEntity> Reverse<TEntity>(this IQueryable<TEntity> source)
     {
-        return source.Reverse<TEntity>();
+        return source.Reverse().AsQueryable<TEntity>();
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 return source.Count();
             }
@@ -181,7 +181,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 return source.LongCount();
@@ -210,7 +210,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 return source.ToList();
@@ -239,7 +239,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 return source.ToArray();
@@ -268,7 +268,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 return source.Any();
@@ -297,7 +297,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 return source.Any(predicate);
@@ -327,7 +327,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 return source.FirstOrDefault();
@@ -358,7 +358,7 @@ public static class LinqExtensions
         }
         catch (Exception exception)
         {
-            if (IsNotImplementedOrNotSupported(exception))
+            if (IsNotImplementedOrNotSupportedException(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 return source.FirstOrDefault(predicate);
@@ -370,7 +370,7 @@ public static class LinqExtensions
 
     #region Private members
 
-    private static bool IsNotImplementedOrNotSupported(Exception exception) => exception is NotImplementedException or NotSupportedException or InvalidOperationException;
+    private static bool IsNotImplementedOrNotSupportedException(Exception exception) => exception is NotImplementedException or NotSupportedException or InvalidOperationException;
 
     #endregion
 }

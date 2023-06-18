@@ -77,9 +77,9 @@ public static class PaginationExtensions
 
             ArgumentNullException.ThrowIfNull(property, $"Property {filterGroup.Key} does not exist");
 
-            var filtersCount = filters.Length;
+            var filtersCount = filters.LongLength;
 
-            for (var i = 0; i < filtersCount; i++)
+            for (long i = 0; i < filtersCount; i++)
             {
                 var predicatePart = "(";
 
@@ -239,20 +239,20 @@ public static class PaginationExtensions
 
     private static readonly Dictionary<TypeCode, Func<Type, FilteringExpression, object[]>> _typeHandlers = new()
     {
-        { TypeCode.Boolean,  (property, expression) => ParseBool(new (property, expression, ExpressionOperator.GetBooleanOperators())) },
-        { TypeCode.Byte,     (property, expression) => Parse<byte>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.Char,     (property, expression) => Parse<char>(new (property, expression, ExpressionOperator.GetEnumOperators())) },
+        { TypeCode.Boolean,  (property, expression) => ParseBool(new (property, expression, ExpressionOperator.GetBooleanOperators()))        },
+        { TypeCode.Byte,     (property, expression) => Parse<byte>(new (property, expression, ExpressionOperator.GetNumericOperators()))      },
+        { TypeCode.Char,     (property, expression) => Parse<char>(new (property, expression, ExpressionOperator.GetEnumOperators()))         },
         { TypeCode.DateTime, (property, expression) => Parse<DateTime>(new (property, expression, ExpressionOperator.GetDateTimeOperators())) },
-        { TypeCode.Decimal,  (property, expression) => Parse<decimal>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.Double,   (property, expression) => Parse<double>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.Int16,    (property, expression) => Parse<short>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.Int32,    (property, expression) => Parse<int>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.Int64,    (property, expression) => Parse<long>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.SByte,    (property, expression) => Parse<sbyte>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.Single,   (property, expression) => Parse<float>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.UInt16,   (property, expression) => Parse<ushort>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.UInt32,   (property, expression) => Parse<uint>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
-        { TypeCode.UInt64,   (property, expression) => Parse<ulong>(new (property, expression, ExpressionOperator.GetNumericOperators())) },
+        { TypeCode.Decimal,  (property, expression) => Parse<decimal>(new (property, expression, ExpressionOperator.GetNumericOperators()))   },
+        { TypeCode.Double,   (property, expression) => Parse<double>(new (property, expression, ExpressionOperator.GetNumericOperators()))    },
+        { TypeCode.Int16,    (property, expression) => Parse<short>(new (property, expression, ExpressionOperator.GetNumericOperators()))     },
+        { TypeCode.Int32,    (property, expression) => Parse<int>(new (property, expression, ExpressionOperator.GetNumericOperators()))       },
+        { TypeCode.Int64,    (property, expression) => Parse<long>(new (property, expression, ExpressionOperator.GetNumericOperators()))      },
+        { TypeCode.SByte,    (property, expression) => Parse<sbyte>(new (property, expression, ExpressionOperator.GetNumericOperators()))     },
+        { TypeCode.Single,   (property, expression) => Parse<float>(new (property, expression, ExpressionOperator.GetNumericOperators()))     },
+        { TypeCode.UInt16,   (property, expression) => Parse<ushort>(new (property, expression, ExpressionOperator.GetNumericOperators()))    },
+        { TypeCode.UInt32,   (property, expression) => Parse<uint>(new (property, expression, ExpressionOperator.GetNumericOperators()))      },
+        { TypeCode.UInt64,   (property, expression) => Parse<ulong>(new (property, expression, ExpressionOperator.GetNumericOperators()))     },
     };
 
     private static object[] Parse<TValue>(ParsingConfig config) where TValue : IParsable<TValue>
@@ -261,7 +261,7 @@ public static class PaginationExtensions
 
         var result = new List<object>();
 
-        for (int i = 0; i < values.Length; i++)
+        for (long i = 0; i < values.LongLength; i++)
         {
             var value = values[i];
 
@@ -279,7 +279,7 @@ public static class PaginationExtensions
 
         var result = new List<object>();
 
-        for (int i = 0; i < values.Length; i++)
+        for (long i = 0; i < values.LongLength; i++)
         {
             var value = values[i];
 
@@ -297,7 +297,7 @@ public static class PaginationExtensions
 
         var result = new List<object>();
 
-        for (int i = 0; i < values.Length; i++)
+        for (long i = 0; i < values.LongLength; i++)
         {
             var value = values[i];
 
