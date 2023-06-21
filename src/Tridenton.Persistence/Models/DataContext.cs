@@ -25,13 +25,18 @@ public abstract class DataContext : DbContext
     #region Additional queryables
 
     /// <summary>
-    /// 
+    ///     Creates an <see cref="IQueryable"/> by specific <paramref name="type"/> that can be used to query instances.
     /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public IQueryable GetQueryable(Type type)
+    /// <param name="type">Type of entity to query</param>
+    /// <returns>
+    ///     An <see cref="IQueryable"/> by specific <paramref name="type"/> that can be used to query instances.
+    /// </returns>
+    public IQueryable Set(Type type)
     {
-        MethodInfo method = GetType().GetMethods().FirstOrDefault(m => m.Name == nameof(DbContext.Set) && m.IsGenericMethod)!.MakeGenericMethod(type);
+        var method = GetType()
+            .GetMethods()
+            .FirstOrDefault(m => m.Name == nameof(Set) && m.IsGenericMethod)!
+            .MakeGenericMethod(type);
 
         var query = (IQueryable)method.Invoke(this, null)!;
 
@@ -39,16 +44,18 @@ public abstract class DataContext : DbContext
     }
 
     /// <summary>
-    /// 
+    ///     Creates an <see cref="T:System.Linq.IQueryable`1" /> by specific property that can be used to query instances.
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    /// <param name="item"></param>
-    /// <param name="property"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public IQueryable<TEntity> GetQueryByProperty<TEntity>(TEntity item, string property, object? value) where TEntity : class
+    /// <param name="item">Entity instance</param>
+    /// <param name="property">Property to filter</param>
+    /// <param name="value">Value to filter</param>
+    /// <returns>
+    ///     An <see cref="T:System.Linq.IQueryable`1" /> by specific property that can be used to query instances.
+    /// </returns>
+    public IQueryable<TEntity> SetByProperty<TEntity>(TEntity item, string property, object? value) where TEntity : class
     {
-        return GetQueryByProperty<TEntity>(item.GetType(), property, value);
+        return SetByProperty<TEntity>(item.GetType(), property, value);
     }
 
     /// <summary>
@@ -59,9 +66,9 @@ public abstract class DataContext : DbContext
     /// <param name="property"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public IQueryable<TEntity> GetQueryByProperty<TEntity>(Type type, string property, object? value) where TEntity : class
+    public IQueryable<TEntity> SetByProperty<TEntity>(Type type, string property, object? value) where TEntity : class
     {
-        return GetQueryByProperty(type, property, value).Cast<TEntity>();
+        return SetByProperty(type, property, value).Cast<TEntity>();
     }
 
     /// <summary>
@@ -71,9 +78,9 @@ public abstract class DataContext : DbContext
     /// <param name="property"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public IQueryable GetQueryByProperty(Type type, string property, object? value)
+    public IQueryable SetByProperty(Type type, string property, object? value)
     {
-        return GetQueryByProperties(type, new()
+        return SetByProperties(type, new()
         {
             { property, value }
         });
@@ -85,9 +92,9 @@ public abstract class DataContext : DbContext
     /// <param name="type"></param>
     /// <param name="properties"></param>
     /// <returns></returns>
-    public IQueryable GetQueryByProperties(Type type, Dictionary<string, object?> properties)
+    public IQueryable SetByProperties(Type type, Dictionary<string, object?> properties)
     {
-        var query = GetQueryable(type);
+        var query = Set(type);
 
         if (properties is null || !properties.Any()) return query;
 
@@ -340,29 +347,29 @@ public abstract class DataContext : DbContext
     #region Remove
 
     /// <summary>
-    ///     Removes specified <paramref name="entity"/> using specified <paramref name="removeType"/>
+    ///     Removes specified <paramref name="entity"/> using specified <paramref name="behavior"/>
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <param name="entity">The entity to remove.</param>
-    /// <param name="removeType">Remove type.</param>
+    /// <param name="behavior">Remove type.</param>
     /// <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken" /> to observe while waiting for the task to complete.</param>
     /// <returns>
     ///     A task that represents the asynchronous operation.
     /// </returns>
-    public async ValueTask RemoveAsync<TEntity>(TEntity entity, RemoveType removeType = RemoveType.ViaChangesTracker, CancellationToken cancellationToken = default) where TEntity : Entity
+    public async ValueTask RemoveAsync<TEntity>(TEntity entity, RemoveBehavior behavior = RemoveBehavior.ViaChangesTracker, CancellationToken cancellationToken = default) where TEntity : Entity
     {
-        switch (removeType)
+        switch (behavior)
         {
-            case RemoveType.ViaChangesTracker:
+            case RemoveBehavior.ViaChangesTracker:
                 Remove(entity);
                 break;
 
-            case RemoveType.SoftViaChangesTracker:
+            case RemoveBehavior.SoftViaChangesTracker:
                 entity.SetAsDeleted();
                 Update(entity);
                 break;
 
-            case RemoveType.SoftImmediate:
+            case RemoveBehavior.SoftImmediate:
                 await Set<TEntity>()
                     .Where(e => e.ID == entity.ID)
                     .ExecuteUpdateAsync(e => e
@@ -371,7 +378,7 @@ public abstract class DataContext : DbContext
                     cancellationToken);
                 break;
 
-            case RemoveType.Force:
+            case RemoveBehavior.Force:
                 await Set<TEntity>()
                     .Where(e => e.ID == entity.ID)
                     .ExecuteDeleteAsync(cancellationToken);
@@ -383,26 +390,26 @@ public abstract class DataContext : DbContext
     }
 
     /// <summary>
-    ///     Removes all entities based on an <paramref name="expression"/> using specified <paramref name="removeType"/>
+    ///     Removes all entities based on an <paramref name="expression"/> using specified <paramref name="behavior"/>
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     /// <param name="expression">A function to test each element for a condition.</param>
-    /// <param name="removeType">Remove type.</param>
+    /// <param name="behavior">Remove type.</param>
     /// <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken" /> to observe while waiting for the task to complete.</param>
     /// <returns>
     ///     A task that represents the asynchronous operation.
     /// </returns>
-    public async ValueTask RemoveAllAsync<TEntity>(Expression<Func<TEntity, bool>> expression, RemoveType removeType = RemoveType.ViaChangesTracker, CancellationToken cancellationToken = default) where TEntity : Entity
+    public async ValueTask RemoveAllAsync<TEntity>(Expression<Func<TEntity, bool>> expression, RemoveBehavior behavior = RemoveBehavior.ViaChangesTracker, CancellationToken cancellationToken = default) where TEntity : Entity
     {
         var entities = Set<TEntity>().Where(expression);
 
-        switch (removeType)
+        switch (behavior)
         {
-            case RemoveType.ViaChangesTracker:
+            case RemoveBehavior.ViaChangesTracker:
                 RemoveRange(entities);
                 break;
 
-            case RemoveType.SoftViaChangesTracker:
+            case RemoveBehavior.SoftViaChangesTracker:
                 var entitiesAsArray = await LinqExtensions.ToArrayAsync(entities, cancellationToken);
 
                 for (long i = 0; i < entitiesAsArray.LongLength; i++)
@@ -414,7 +421,7 @@ public abstract class DataContext : DbContext
                 }
                 break;
 
-            case RemoveType.SoftImmediate:
+            case RemoveBehavior.SoftImmediate:
                 await entities
                     .ExecuteUpdateAsync(e => e
                         .SetProperty(e => e.LifecycleState, e => LifecycleState.Deleted)
@@ -422,7 +429,7 @@ public abstract class DataContext : DbContext
                     cancellationToken);
                 break;
 
-            case RemoveType.Force:
+            case RemoveBehavior.Force:
                 await entities.ExecuteDeleteAsync(cancellationToken);
                 break;
 
@@ -606,6 +613,8 @@ public abstract class DataContext : DbContext
         {
             var requestsLogsTableType = Options.RequestsLogsTableType!;
 
+            modelBuilder.Entity(requestsLogsTableType);
+
             //modelBuilder.Entity(requestsLogsTableType)
             //    .Property(nameof(RequestLog.Details))
             //    .HasColumnType("json");
@@ -660,31 +669,4 @@ public abstract class DataContext : DbContext
             Database.EnsureCreated();
         }
     }
-}
-
-public enum RemoveType
-{
-    /// <summary>
-    ///     Executes regular <b>remove</b> when <see cref="M:Microsoft.EntityFrameworkCore.DbContext.SaveChanges" /> is called.
-    /// </summary>
-    ViaChangesTracker,
-
-    /// <summary>
-    ///     Sets <see cref="Entity.LifecycleState"/> to <see cref="LifecycleState.Deleted"/>,
-    ///     writes <see cref="DateTime.UtcNow"/> to <see cref="Entity.DeleteTS"/>
-    ///     and executes regular <b>update</b> when <see cref="M:Microsoft.EntityFrameworkCore.DbContext.SaveChanges" /> is called.
-    /// </summary>
-    SoftViaChangesTracker,
-
-    /// <summary>
-    ///     Sets <see cref="Entity.LifecycleState"/> to <see cref="LifecycleState.Deleted"/>,
-    ///     writes <see cref="DateTime.UtcNow"/> to <see cref="Entity.DeleteTS"/>
-    ///     and executes regular update <b>immediately</b>, without calling <see cref="M:Microsoft.EntityFrameworkCore.DbContext.SaveChanges" />.
-    /// </summary>
-    SoftImmediate,
-
-    /// <summary>
-    ///     Removes entity <b>immediately</b>, without calling <see cref="M:Microsoft.EntityFrameworkCore.DbContext.SaveChanges" />.
-    /// </summary>
-    Force,
 }

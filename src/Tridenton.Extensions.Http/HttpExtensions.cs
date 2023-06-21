@@ -1,7 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using Microsoft.AspNetCore.Http;
-using Tridenton.Core.Models;
 
 namespace Tridenton.Extensions.Http;
 
